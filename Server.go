@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net"
+	"time"
 )
 
 func handleConnection(conn net.Conn) {
@@ -11,6 +12,13 @@ func handleConnection(conn net.Conn) {
 	// Handle incoming data
 	buf := make([]byte, 1024)
 	for {
+		// Set read deadline
+		err := conn.SetReadDeadline(time.Now().Add(5 * time.Second))
+		if err != nil {
+			fmt.Println("Error setting read deadline:", err)
+			return
+		}
+
 		n, err := conn.Read(buf)
 		if err != nil {
 			fmt.Println("Error reading:", err)

@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"time"
 )
 
 func main() {
-	conn, err := net.Dial("tcp", "localhost:8080")
+	conn, err := net.DialTimeout("tcp", "localhost:8080", 5*time.Second) // Dial with timeout
 	if err != nil {
 		fmt.Println("Error connecting:", err)
 		return
@@ -27,6 +28,13 @@ func main() {
 		_, err := conn.Write([]byte(text))
 		if err != nil {
 			fmt.Println("Error sending data:", err)
+			return
+		}
+
+		// Set write deadline
+		err = conn.SetWriteDeadline(time.Now().Add(5 * time.Second))
+		if err != nil {
+			fmt.Println("Error setting write deadline:", err)
 			return
 		}
 	}
